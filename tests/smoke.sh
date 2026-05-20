@@ -75,4 +75,14 @@ WORK_DIR="$d" "${repo_root}/wgctl" remove bob >/dev/null
 assert_not_contains "$d/wg0.conf" "bob@example.com"
 assert_dir_absent   "$d/clients/bob"
 
+# Сценарий 6: list выводит всех трёх пиров
+setup_fixture "$d"
+output=$(WORK_DIR="$d" "${repo_root}/wgctl" list)
+echo "$output" | grep -qF "alice@example.com" || { echo "FAIL: list missing alice"; exit 1; }
+echo "$output" | grep -qF "bob@example.com"   || { echo "FAIL: list missing bob"; exit 1; }
+echo "$output" | grep -qF "carol@example.com" || { echo "FAIL: list missing carol"; exit 1; }
+echo "$output" | grep -qF "10.8.8.2/32"       || { echo "FAIL: list missing alice IP"; exit 1; }
+echo "$output" | grep -qF "10.8.8.3/32"       || { echo "FAIL: list missing bob IP"; exit 1; }
+echo "$output" | grep -qF "10.8.8.4/32"       || { echo "FAIL: list missing carol IP"; exit 1; }
+
 echo "OK"

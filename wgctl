@@ -15,6 +15,7 @@ usage() {
   remove <email>       Удалить клиента (email или username)
   reset                Сбросить настройки и всех клиентов
   uninstall            Полностью снести WireGuard
+  list                 Показать список клиентов (email, IP, public key)
   menu                 Интерактивное меню (по умолчанию)
   help                 Показать это сообщение
 EOF
@@ -29,6 +30,7 @@ case "${cmd}" in
     remove)         "${SCRIPTS}/remove-client.sh" "$@" ;;
     reset)          "${SCRIPTS}/reset.sh" ;;
     uninstall)      "${SCRIPTS}/uninstall.sh" ;;
+    list)           "${SCRIPTS}/list.sh" ;;
     menu)           "${SCRIPTS}/menu.sh" ;;
     help|-h|--help) usage ;;
     *)
