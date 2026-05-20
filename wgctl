@@ -1,0 +1,39 @@
+#!/bin/bash
+# wgctl — единая точка входа для wireguard_vds.
+set -euo pipefail
+
+HERE=$(cd "$(dirname "$0")" && pwd)
+SCRIPTS="${HERE}/scripts"
+
+usage() {
+    cat <<'EOF'
+Использование: wgctl <команда> [аргументы]
+
+Команды:
+  install              Полная установка (uninstall + install + первый клиент)
+  add <email>          Добавить клиента
+  remove <email>       Удалить клиента (email или username)
+  reset                Сбросить настройки и всех клиентов
+  uninstall            Полностью снести WireGuard
+  menu                 Интерактивное меню (по умолчанию)
+  help                 Показать это сообщение
+EOF
+}
+
+cmd="${1:-menu}"
+shift || true
+
+case "${cmd}" in
+    install)        "${SCRIPTS}/initial.sh" "$@" ;;
+    add)            "${SCRIPTS}/add-client.sh" "$@" ;;
+    remove)         "${SCRIPTS}/remove-client.sh" "$@" ;;
+    reset)          "${SCRIPTS}/reset.sh" ;;
+    uninstall)      "${SCRIPTS}/uninstall.sh" ;;
+    menu)           "${SCRIPTS}/menu.sh" ;;
+    help|-h|--help) usage ;;
+    *)
+        echo "wgctl: неизвестная команда '${cmd}'" >&2
+        usage >&2
+        exit 1
+        ;;
+esac
