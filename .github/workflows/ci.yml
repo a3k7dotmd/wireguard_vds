@@ -1,0 +1,11 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck -S style *.sh tests/*.sh
+      - name: smoke tests
+        run: ./tests/smoke.sh
