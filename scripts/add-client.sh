@@ -19,9 +19,8 @@ echo "Username is ${userName}"
 
 cd "${WORK_DIR}" || exit 1
 
-read -r DNS < ./dns.var
-read -r ENDPOINT < ./endpoint.var
-read -r VPN_SUBNET < ./vpn_subnet.var
+# shellcheck source=/dev/null
+. "${WORK_DIR}/state.env"
 PRESHARED_KEY=".preshared"
 PRIV_KEY=".key"
 PUB_KEY=".pub"
@@ -48,17 +47,26 @@ echo "${CLIENT_PUBLIC_KEY}" > ./"${userName}${PUB_KEY}"
 read -r SERVER_PUBLIC_KEY < /etc/wireguard/server.pub
 
 # выделить следующий свободный IP в пуле
-read -r OCTET_IP < /etc/wireguard/last_used_ip.var
-if
-	[[ ${OCTET_IP} -ge 254 ]]; then
-	echo "Пул исчерпан!"
-	exit 1;
+OCTET_IP="${LAST_USED_IP}"
+if [[ "${OCTET_IP}" -ge 254 ]]; then
+    echo "Пул исчерпан!"
+    exit 1
 fi
 
 OCTET_IP=$((OCTET_IP+1))
-echo "${OCTET_IP}" > /etc/wireguard/last_used_ip.var
+LAST_USED_IP="${OCTET_IP}"
 
-CLIENT_IP="${VPN_SUBNET}${OCTET_IP}/32"
+# извлечь первые три октета из CIDR (например 10.8.8.0/24 → 10.8.8)
+IFS=. read -r PREFIX_O1 PREFIX_O2 PREFIX_O3 _ <<<"${VPN_SUBNET%/*}"
+CLIENT_IP="${PREFIX_O1}.${PREFIX_O2}.${PREFIX_O3}.${OCTET_IP}/32"
+
+# обновить state.env с новым LAST_USED_IP
+cat > "${WORK_DIR}/state.env" <<EOF
+ENDPOINT="${ENDPOINT}"
+DNS="${DNS}"
+VPN_SUBNET="${VPN_SUBNET}"
+LAST_USED_IP=${LAST_USED_IP}
+EOF
 
 # создать клиентский конфиг
 cat > /etc/wireguard/clients/"${userName}"/"${userName}".conf << EOF
