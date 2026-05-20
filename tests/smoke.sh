@@ -69,4 +69,10 @@ fi
 after=$(sha256sum "$d/wg0.conf")
 [ "$before" = "$after" ] || { echo "FAIL: wg0.conf changed on no-op remove"; exit 1; }
 
+# Сценарий 5: wgctl действительно проксирует remove в scripts/remove-client.sh
+setup_fixture "$d"
+WORK_DIR="$d" "${repo_root}/wgctl" remove bob >/dev/null
+assert_not_contains "$d/wg0.conf" "bob@example.com"
+assert_dir_absent   "$d/clients/bob"
+
 echo "OK"
