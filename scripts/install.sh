@@ -22,9 +22,10 @@ umask 077
 # сгенерировать серверные ключи
 
 
-if [[ -e server.pub && -e server.key ]]
-  then echo "ключи есть"	
-  else
+if [[ -e server.pub && -e server.key ]]; then
+    echo "ключи есть"
+    read -r SERVER_PRIVKEY < ./server.key
+else
     SERVER_PRIVKEY=$( wg genkey )
     SERVER_PUBKEY=$( echo "${SERVER_PRIVKEY}" | wg pubkey )
     echo "${SERVER_PUBKEY}" > ./server.pub
