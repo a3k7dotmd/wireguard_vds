@@ -1,39 +1,57 @@
-# Скрипт установки Wireguard 
-Скрипт автоматической установки и настройки Wireguard на сервере с Ubuntu Server 18.04 и новее.
+# wireguard_vds
 
-## Как пользоваться
+[![CI](https://github.com/blackden/wireguard_vds/actions/workflows/ci.yml/badge.svg)](https://github.com/blackden/wireguard_vds/actions/workflows/ci.yml)
 
-### Установка
-```
-git clone https://github.com/blackden/wireguard_vds.git wireguard_vds
+Набор bash-скриптов для автоматической установки и настройки WireGuard на сервере с Ubuntu Server 18.04 и новее. Поднимает сервер, генерирует серверные ключи, выдаёт клиентские конфиги (с QR-кодом для мобильных) и умеет добавлять/удалять клиентов на лету.
+
+## Требования
+
+- Ubuntu Server 18.04 или новее.
+- Права root (все скрипты выполняются через `sudo`).
+- Доступ в интернет (для `apt install` и определения внешнего IP).
+
+## Быстрый старт
+
+```sh
+git clone https://github.com/blackden/wireguard_vds.git
 cd wireguard_vds
 sudo ./01-initial.sh
 ```
 
-Скрипт `01-initial.sh` удаляет предыдущую установку Wireguard (если такая была), используя скрипт `20-remove.sh`. Затем он устанавливает и настраивает Wireguard, используя скрипт `10-install.sh`. А затем создает клиента, используя скрипт `11-add-client.sh`.
+Скрипт `01-initial.sh` снесёт предыдущую установку WireGuard (если была), поставит свежую и сразу создаст первого клиента. На выходе — QR-код в терминале и `.conf`-файл для устройства клиента.
 
-### Добавить нового VPN клиента
-`11-add-client.sh` - скрипт добавляет нового VPN клиента. В результате выполнения, он создаст конфигурационный файл клиента ($CLIENT_NAME.conf) по пути ./clients/$CLIENT_NAME/ и выведет на экран QR-код с конфигурацией.
+## Скрипты
 
-```
-sudo ./11-add-client.sh
-# или
-sudo ./11-add-client.sh $CLIENT_NAME
+| Скрипт | Что делает |
+|---|---|
+| `01-initial.sh` | Оркестратор: `20-remove.sh` → `10-install.sh` → `11-add-client.sh`. Полная свежая установка с первым клиентом. |
+| `10-install.sh` | Ставит `wireguard-tools`, включает IP-форвардинг, генерирует серверные ключи, спрашивает endpoint / VPN-подсеть / DNS / WAN-интерфейс, создаёт шаблон `wg0.conf.def`. |
+| `11-add-client.sh` | Добавляет нового клиента (`sudo ./11-add-client.sh user@example.com`). Создаёт ключи, пишет `[Peer]` в `wg0.conf`, применяет изменения через `wg syncconf` (без обрыва активных туннелей), показывает QR. |
+| `12-remove-client.sh` | Удаляет клиента (по email или username). Чистит `wg0.conf`, директорию клиента и применяет изменения через `wg syncconf`. |
+| `19-reset.sh` | Удаляет всех клиентов и останавливает WireGuard. Установка остаётся на месте. |
+| `20-remove.sh` | Полная деинсталляция: останавливает сервис, сносит пакеты и `/etc/wireguard`. |
+| `detect_wan.sh` | Хелпер, который определяет имя WAN-интерфейса по таблице маршрутизации. Вызывается из `10-install.sh`. |
+
+## Разработка
+
+Перед коммитом локально прогоните то, что делает CI:
+
+```sh
+shellcheck -S style *.sh tests/*.sh
+./tests/smoke.sh
 ```
 
-### Сбросить настройки и записи о пользователях. Пересоздать сервер
-`19-reset.sh` - Скрипт удаляет информацию о клиентах и останавливает VPN сервер Winguard.
-```
-sudo ./19-reset.sh
-```
+Smoke-тесты создают временный `wg0.conf` в `mktemp -d` и проверяют поведение `12-remove-client.sh` на нескольких сценариях — не требуют ни root, ни поднятого WireGuard, идут за миллисекунды.
 
-### Удалить Wireguard
-```
-sudo ./20-remove.sh
-```
+Подробнее — см. [CONTRIBUTING.md](CONTRIBUTING.md). Если нашли уязвимость — [SECURITY.md](SECURITY.md).
+
+## Лицензия
+
+MIT, см. [LICENSE](LICENSE).
+
 ## Авторы
+
 - Fedorov Tech
 - Denis Fedorov
 
-## Форк основан на 
-https://github.com/pprometey/wireguard_aws
+Форк основан на [pprometey/wireguard_aws](https://github.com/pprometey/wireguard_aws).
