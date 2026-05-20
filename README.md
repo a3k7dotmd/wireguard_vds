@@ -15,30 +15,49 @@
 ```sh
 git clone https://github.com/blackden/wireguard_vds.git
 cd wireguard_vds
-sudo ./01-initial.sh
+sudo make install
 ```
 
-Скрипт `01-initial.sh` снесёт предыдущую установку WireGuard (если была), поставит свежую и сразу создаст первого клиента. На выходе — QR-код в терминале и `.conf`-файл для устройства клиента.
+`make install` (то же, что `sudo ./wgctl install`) снесёт предыдущую установку WireGuard (если была), поставит свежую и сразу создаст первого клиента. На выходе — QR-код в терминале и `.conf`-файл для устройства клиента.
 
-## Скрипты
+## Команды
 
-| Скрипт | Что делает |
+Единая точка входа — `wgctl`:
+
+| Команда | Что делает |
 |---|---|
-| `01-initial.sh` | Оркестратор: `20-remove.sh` → `10-install.sh` → `11-add-client.sh`. Полная свежая установка с первым клиентом. |
-| `10-install.sh` | Ставит `wireguard-tools`, включает IP-форвардинг, генерирует серверные ключи, спрашивает endpoint / VPN-подсеть / DNS / WAN-интерфейс, создаёт шаблон `wg0.conf.def`. |
-| `11-add-client.sh` | Добавляет нового клиента (`sudo ./11-add-client.sh user@example.com`). Создаёт ключи, пишет `[Peer]` в `wg0.conf`, применяет изменения через `wg syncconf` (без обрыва активных туннелей), показывает QR. |
-| `12-remove-client.sh` | Удаляет клиента (по email или username). Чистит `wg0.conf`, директорию клиента и применяет изменения через `wg syncconf`. |
-| `19-reset.sh` | Удаляет всех клиентов и останавливает WireGuard. Установка остаётся на месте. |
-| `20-remove.sh` | Полная деинсталляция: останавливает сервис, сносит пакеты и `/etc/wireguard`. |
-| `detect_wan.sh` | Хелпер, который определяет имя WAN-интерфейса по таблице маршрутизации. Вызывается из `10-install.sh`. |
+| `wgctl install` | Полная установка (uninstall + install + первый клиент). |
+| `wgctl add <email>` | Добавить клиента. Создаёт ключи, дописывает `[Peer]` в `wg0.conf`, применяет `wg syncconf` (без обрыва активных туннелей), показывает QR. |
+| `wgctl remove <email\|username>` | Удалить клиента. Чистит `wg0.conf`, директорию клиента, применяет `wg syncconf`. |
+| `wgctl reset` | Удалить всех клиентов, остановить сервер. Установка остаётся. |
+| `wgctl uninstall` | Полная деинсталляция: остановка сервиса, `apt remove`, `rm -rf /etc/wireguard`. |
+| `wgctl menu` | Интерактивное меню (вызывается без аргументов по умолчанию). |
+| `wgctl help` | Справка по командам. |
+
+## Makefile
+
+Удобная обёртка для админских и dev-операций:
+
+```sh
+sudo make install                # полная свежая установка
+sudo make add EMAIL=u@example.com
+sudo make remove EMAIL=u@example.com
+sudo make reset
+sudo make uninstall
+make menu                        # TUI
+
+make test                        # ./tests/smoke.sh
+make lint                        # shellcheck по всему репо
+make help                        # список целей
+```
 
 ## Разработка
 
 Перед коммитом локально прогоните то, что делает CI:
 
 ```sh
-shellcheck -S style *.sh tests/*.sh
-./tests/smoke.sh
+make lint
+make test
 ```
 
 Smoke-тесты создают временный `wg0.conf` в `mktemp -d` и проверяют поведение `12-remove-client.sh` на нескольких сценариях — не требуют ни root, ни поднятого WireGuard, идут за миллисекунды.

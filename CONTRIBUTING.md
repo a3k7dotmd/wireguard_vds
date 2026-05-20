@@ -7,8 +7,8 @@
 Прогоните локально то, что прогонит CI:
 
 ```sh
-shellcheck -S style *.sh tests/*.sh
-./tests/smoke.sh
+make lint
+make test
 ```
 
 PR с красным CI не мерджится — pipeline тривиальный, [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
@@ -22,6 +22,7 @@ PR с красным CI не мерджится — pipeline тривиальн�
 - `read -r` всегда — без `-r` backslashes мангаются.
 - `cd ... || exit 1` — иначе после неудачного `cd` относительные пути уйдут не туда.
 - Никаких `set -e` в коротких ручных скриптах, но `set -euo pipefail` обязателен в тестах и любых скриптах, которые предполагается запускать неинтерактивно.
+- Новые подкоманды добавляются в `wgctl` (case-arm) и `scripts/menu.sh` (пункт), плюс в `Makefile`-цель если она admin-уровня. Один новый файл `scripts/<name>.sh` на команду.
 
 ## Pull Request
 
