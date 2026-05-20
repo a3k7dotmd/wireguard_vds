@@ -17,6 +17,7 @@ usage() {
   uninstall            Полностью снести WireGuard
   list                 Показать список клиентов (email, IP, public key)
   status               Состояние WireGuard-сервиса
+  regenerate <email>   Пересоздать ключи клиента, сохранив IP
   menu                 Интерактивное меню (по умолчанию)
   help                 Показать это сообщение
 EOF
@@ -33,6 +34,7 @@ case "${cmd}" in
     uninstall)      "${SCRIPTS}/uninstall.sh" ;;
     list)           "${SCRIPTS}/list.sh" ;;
     status)         "${SCRIPTS}/status.sh" ;;
+    regenerate)     "${SCRIPTS}/regenerate.sh" "$@" ;;
     menu)           "${SCRIPTS}/menu.sh" ;;
     help|-h|--help) usage ;;
     *)

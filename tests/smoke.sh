@@ -89,4 +89,24 @@ echo "$output" | grep -qF "10.8.8.4/32"       || { echo "FAIL: list missing caro
 output=$("${repo_root}/wgctl" status)
 echo "$output" | grep -qF "не запущен" || { echo "FAIL: status didn't report inactive"; exit 1; }
 
+# Сценарий 8: regenerate сохраняет IP, меняет PublicKey
+if command -v wg >/dev/null; then
+    setup_fixture "$d"
+    echo "FAKEFAKEFAKE" > "$d/server.pub"
+    # state.env нужен regenerate'у для ENDPOINT/DNS
+    cat > "$d/state.env" <<'STATE_EOF'
+ENDPOINT="1.2.3.4:51820"
+DNS="9.9.9.9"
+VPN_SUBNET="10.8.8.0/24"
+LAST_USED_IP=4
+STATE_EOF
+    WORK_DIR="$d" "${repo_root}/wgctl" regenerate bob >/dev/null 2>&1
+    grep -A 3 'bob@example.com' "$d/wg0.conf" | grep -qF "10.8.8.3/32" \
+        || { echo "FAIL: regenerate lost bob's IP"; exit 1; }
+    if grep -A 3 'bob@example.com' "$d/wg0.conf" | grep -qF "PublicKey = BBB"; then
+        echo "FAIL: regenerate kept old PublicKey"
+        exit 1
+    fi
+fi
+
 echo "OK"
