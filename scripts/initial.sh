@@ -1,11 +1,14 @@
 #!/bin/bash
+# Полный сценарий первой установки: снести предыдущую установку,
+# поставить заново, выдать конфиг первому клиенту.
+set -euo pipefail
 
-echo "# Installing Wireguard"
+HERE=$(cd "$(dirname "$0")" && pwd)
 
-./20-remove.sh && \
+echo "# Installing WireGuard"
 
-./10-install.sh && \
+"${HERE}/uninstall.sh"
+"${HERE}/install.sh"
+"${HERE}/add-client.sh"
 
-./11-add-client.sh
-
-echo "# Wireguard installed"
+echo "# WireGuard installed"

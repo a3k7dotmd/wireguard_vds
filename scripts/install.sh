@@ -62,8 +62,9 @@ echo "${DNS}" > ./dns.var
 
 echo 1 > ./last_used_ip.var
 
-# set wan interface
-./detect_wan.sh
+# определить WAN-интерфейс
+HERE_INSTALL=$(cd "$(dirname "$0")" && pwd)
+WAN_INTERFACE_NAME=$("${HERE_INSTALL}/detect-wan.sh")
 
 SERVER_EXTERNAL_PORT=$(cut -d: -f2 ./endpoint.var)
 cat > ./wg0.conf.def << EOF

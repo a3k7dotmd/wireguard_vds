@@ -1,12 +1,10 @@
 #!/bin/bash
+# Выводит имя WAN-интерфейса на stdout. Подсказка/prompt идут в stderr,
+# чтобы вызывающая сторона могла захватить результат через $(...).
+set -euo pipefail
 
-detect_wan () {
-	ip -c route | grep "default" | awk '{print $5}'
-}
-detect_wan
-read -r -p "Enter the name of the WAN network interface ([ENTER] set to default: $(detect_wan)): " \
-	WAN_INTERFACE_NAME
-if [ -z "${WAN_INTERFACE_NAME}" ]
-then WAN_INTERFACE_NAME=$(detect_wan)
-fi
-echo "${WAN_INTERFACE_NAME}"
+default=$(ip -c route | grep "default" | awk '{print $5}')
+
+# `read` сам по себе пишет prompt в stderr, что нам и нужно.
+read -r -p "Имя WAN-интерфейса ([ENTER] = ${default}): " name 1>&2
+echo "${name:-${default}}"
