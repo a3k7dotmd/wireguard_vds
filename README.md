@@ -31,6 +31,10 @@ sudo make install
 | `wgctl remove <email\|username>` | Удалить клиента. Чистит `wg0.conf`, директорию клиента, применяет `wg syncconf`. |
 | `wgctl reset` | Удалить всех клиентов, остановить сервер. Установка остаётся. |
 | `wgctl uninstall` | Полная деинсталляция: остановка сервиса, `apt remove`, `rm -rf /etc/wireguard`. |
+| `wgctl list` | Показать таблицу клиентов (email, IP, public key) из `wg0.conf`. |
+| `wgctl status` | Показать `wg show wg0` если сервис активен, иначе сообщить что сервис не запущен. |
+| `wgctl regenerate <email\|username>` | Пересоздать ключи клиента (новые priv/pub/preshared), сохранив его IP. Обновляет `wg0.conf` и `./clients/<user>/`. |
+| `wgctl export <email\|username>` | Вывести сохранённый `./clients/<user>/<user>.conf` + QR без пересоздания. |
 | `wgctl menu` | Интерактивное меню (вызывается без аргументов по умолчанию). |
 | `wgctl help` | Справка по командам. |
 
@@ -42,6 +46,10 @@ sudo make install
 sudo make install                # полная свежая установка
 sudo make add EMAIL=u@example.com
 sudo make remove EMAIL=u@example.com
+sudo make regenerate EMAIL=u@example.com
+sudo make export EMAIL=u@example.com
+sudo make list                   # таблица клиентов
+sudo make status                 # состояние сервиса
 sudo make reset
 sudo make uninstall
 make menu                        # TUI
