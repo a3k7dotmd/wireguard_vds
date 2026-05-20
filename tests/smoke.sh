@@ -38,7 +38,7 @@ trap 'rm -rf "$d"' EXIT
 
 # Scenario 1: remove middle peer by bare username
 setup_fixture "$d"
-WORK_DIR="$d" "${repo_root}/12-remove-client.sh" bob >/dev/null
+WORK_DIR="$d" "${repo_root}/scripts/remove-client.sh" bob >/dev/null
 assert_contains     "$d/wg0.conf" "alice@example.com"
 assert_contains     "$d/wg0.conf" "carol@example.com"
 assert_not_contains "$d/wg0.conf" "bob@example.com"
@@ -47,14 +47,14 @@ assert_dir_absent   "$d/clients/bob"
 
 # Scenario 2: remove last peer by full email
 setup_fixture "$d"
-WORK_DIR="$d" "${repo_root}/12-remove-client.sh" carol@example.com >/dev/null
+WORK_DIR="$d" "${repo_root}/scripts/remove-client.sh" carol@example.com >/dev/null
 assert_contains     "$d/wg0.conf" "alice@example.com"
 assert_contains     "$d/wg0.conf" "bob@example.com"
 assert_not_contains "$d/wg0.conf" "carol@example.com"
 
 # Scenario 3: remove first peer
 setup_fixture "$d"
-WORK_DIR="$d" "${repo_root}/12-remove-client.sh" alice >/dev/null
+WORK_DIR="$d" "${repo_root}/scripts/remove-client.sh" alice >/dev/null
 assert_not_contains "$d/wg0.conf" "alice@example.com"
 assert_contains     "$d/wg0.conf" "bob@example.com"
 assert_contains     "$d/wg0.conf" "carol@example.com"
@@ -62,7 +62,7 @@ assert_contains     "$d/wg0.conf" "carol@example.com"
 # Scenario 4: non-existent peer fails non-destructively
 setup_fixture "$d"
 before=$(sha256sum "$d/wg0.conf")
-if WORK_DIR="$d" "${repo_root}/12-remove-client.sh" nobody >/dev/null 2>&1; then
+if WORK_DIR="$d" "${repo_root}/scripts/remove-client.sh" nobody >/dev/null 2>&1; then
     echo "FAIL: removing non-existent peer should exit non-zero"
     exit 1
 fi

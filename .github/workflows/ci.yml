@@ -6,6 +6,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: shellcheck
-        run: shellcheck -S style *.sh tests/*.sh
+        run: shellcheck -S style scripts/*.sh tests/*.sh
       - name: smoke tests
         run: ./tests/smoke.sh
