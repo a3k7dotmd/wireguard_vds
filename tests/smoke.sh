@@ -109,4 +109,16 @@ STATE_EOF
     fi
 fi
 
+# Сценарий 9: export выводит сохранённый конфиг
+setup_fixture "$d"
+mkdir -p "$d/clients/alice"
+cat > "$d/clients/alice/alice.conf" <<'CONF'
+[Interface]
+PrivateKey = ALICEPRIV
+Address = 10.8.8.2/32
+CONF
+output=$(WORK_DIR="$d" "${repo_root}/wgctl" export alice 2>/dev/null)
+echo "$output" | grep -qF "ALICEPRIV" || { echo "FAIL: export missing content"; exit 1; }
+echo "$output" | grep -qF "10.8.8.2/32" || { echo "FAIL: export missing address"; exit 1; }
+
 echo "OK"

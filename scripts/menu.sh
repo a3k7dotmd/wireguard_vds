@@ -16,6 +16,7 @@ while true; do
   6) Список клиентов
   7) Статус WireGuard
   8) Пересоздать ключи клиента
+  9) Экспорт конфига клиента
   q) Выход
 EOF
     read -r -p "Выбор: " choice || exit 0
@@ -28,6 +29,7 @@ EOF
         6) "${WGCTL}" list ;;
         7) "${WGCTL}" status ;;
         8) read -r -p "Email или username: " arg || continue; "${WGCTL}" regenerate "${arg}" ;;
+        9) read -r -p "Email или username: " arg || continue; "${WGCTL}" export "${arg}" ;;
         q|Q|"") exit 0 ;;
         *) echo "Неизвестный выбор: ${choice}" ;;
     esac

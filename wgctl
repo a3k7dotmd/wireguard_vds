@@ -18,6 +18,7 @@ usage() {
   list                 Показать список клиентов (email, IP, public key)
   status               Состояние WireGuard-сервиса
   regenerate <email>   Пересоздать ключи клиента, сохранив IP
+  export <email>       Вывести сохранённый конфиг клиента + QR
   menu                 Интерактивное меню (по умолчанию)
   help                 Показать это сообщение
 EOF
@@ -35,6 +36,7 @@ case "${cmd}" in
     list)           "${SCRIPTS}/list.sh" ;;
     status)         "${SCRIPTS}/status.sh" ;;
     regenerate)     "${SCRIPTS}/regenerate.sh" "$@" ;;
+    export)         "${SCRIPTS}/export.sh" "$@" ;;
     menu)           "${SCRIPTS}/menu.sh" ;;
     help|-h|--help) usage ;;
     *)

@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-.PHONY: help install add remove reset uninstall menu list status regenerate test lint
+.PHONY: help install add remove reset uninstall menu list status regenerate export test lint
 
 help:
 	@echo "wireguard_vds — Makefile targets"
@@ -10,6 +10,7 @@ help:
 	@echo "  make reset                    сбросить настройки"
 	@echo "  make uninstall                снести wireguard"
 	@echo "  make regenerate EMAIL=u@x.com пересоздать ключи клиента"
+	@echo "  make export EMAIL=u@x.com     вывести сохранённый конфиг"
 	@echo "  make menu                     интерактивное меню"
 	@echo "  make list                     список клиентов"
 	@echo "  make status                   состояние сервиса"
@@ -26,6 +27,7 @@ menu:      ; ./wgctl menu
 list:      ; ./wgctl list
 status:    ; ./wgctl status
 regenerate: ; ./wgctl regenerate "$(EMAIL)"
+export:    ; ./wgctl export "$(EMAIL)"
 
 test:      ; ./tests/smoke.sh
 lint:      ; shellcheck -S style scripts/*.sh tests/*.sh wgctl
