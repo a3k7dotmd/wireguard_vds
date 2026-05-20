@@ -16,6 +16,7 @@ usage() {
   reset                Сбросить настройки и всех клиентов
   uninstall            Полностью снести WireGuard
   list                 Показать список клиентов (email, IP, public key)
+  status               Состояние WireGuard-сервиса
   menu                 Интерактивное меню (по умолчанию)
   help                 Показать это сообщение
 EOF
@@ -31,6 +32,7 @@ case "${cmd}" in
     reset)          "${SCRIPTS}/reset.sh" ;;
     uninstall)      "${SCRIPTS}/uninstall.sh" ;;
     list)           "${SCRIPTS}/list.sh" ;;
+    status)         "${SCRIPTS}/status.sh" ;;
     menu)           "${SCRIPTS}/menu.sh" ;;
     help|-h|--help) usage ;;
     *)

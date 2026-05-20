@@ -85,4 +85,8 @@ echo "$output" | grep -qF "10.8.8.2/32"       || { echo "FAIL: list missing alic
 echo "$output" | grep -qF "10.8.8.3/32"       || { echo "FAIL: list missing bob IP"; exit 1; }
 echo "$output" | grep -qF "10.8.8.4/32"       || { echo "FAIL: list missing carol IP"; exit 1; }
 
+# Сценарий 7: status (без systemd) сообщает что сервис не запущен
+output=$("${repo_root}/wgctl" status)
+echo "$output" | grep -qF "не запущен" || { echo "FAIL: status didn't report inactive"; exit 1; }
+
 echo "OK"

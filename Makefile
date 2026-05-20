@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-.PHONY: help install add remove reset uninstall menu list test lint
+.PHONY: help install add remove reset uninstall menu list status test lint
 
 help:
 	@echo "wireguard_vds — Makefile targets"
@@ -11,6 +11,7 @@ help:
 	@echo "  make uninstall                снести wireguard"
 	@echo "  make menu                     интерактивное меню"
 	@echo "  make list                     список клиентов"
+	@echo "  make status                   состояние сервиса"
 	@echo
 	@echo "  make test                     прогнать smoke tests"
 	@echo "  make lint                     прогнать shellcheck"
@@ -22,6 +23,7 @@ reset:     ; ./wgctl reset
 uninstall: ; ./wgctl uninstall
 menu:      ; ./wgctl menu
 list:      ; ./wgctl list
+status:    ; ./wgctl status
 
 test:      ; ./tests/smoke.sh
 lint:      ; shellcheck -S style scripts/*.sh tests/*.sh wgctl

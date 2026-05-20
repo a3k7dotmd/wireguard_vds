@@ -14,6 +14,7 @@ while true; do
   4) Сбросить настройки и клиентов
   5) Полностью снести WireGuard
   6) Список клиентов
+  7) Статус WireGuard
   q) Выход
 EOF
     read -r -p "Выбор: " choice || exit 0
@@ -24,6 +25,7 @@ EOF
         4) "${WGCTL}" reset ;;
         5) "${WGCTL}" uninstall ;;
         6) "${WGCTL}" list ;;
+        7) "${WGCTL}" status ;;
         q|Q|"") exit 0 ;;
         *) echo "Неизвестный выбор: ${choice}" ;;
     esac
