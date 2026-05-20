@@ -65,8 +65,7 @@ echo 1 > ./last_used_ip.var
 # set wan interface
 ./detect_wan.sh
 
-cat ./endpoint.var | sed -e "s/:/ /" | while read SERVER_EXTERNAL_IP SERVER_EXTERNAL_PORT
-do
+SERVER_EXTERNAL_PORT=$(cut -d: -f2 ./endpoint.var)
 cat > ./wg0.conf.def << EOF
 [Interface]
 Address = $SERVER_IP
@@ -77,7 +76,6 @@ ListenPort = $SERVER_EXTERNAL_PORT
 PostUp   = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o $WAN_INTERFACE_NAME -j MASQUERADE;
 PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o $WAN_INTERFACE_NAME -j MASQUERADE;
 EOF
-done
 
 cp -f ./wg0.conf.def ./wg0.conf
 
