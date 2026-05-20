@@ -18,12 +18,12 @@ cd "${WORK_DIR}" || exit 1
 
 # найти [Peer]-блок по email или username (по префиксу до @)
 if [[ "${ARG}" == *@* ]]; then
-    PEER_LINE=$(grep -F "[Peer] # ${ARG}" wg0.conf)
+    PEER_LINE=$(grep -F "[Peer] # ${ARG}" wg0.conf || true)
 else
-    PEER_LINE=$(grep -E "^\[Peer\] # ${ARG}@" wg0.conf)
+    PEER_LINE=$(grep -E "^\[Peer\] # ${ARG}@" wg0.conf || true)
 fi
 
-MATCHES=$(echo -n "${PEER_LINE}" | grep -c .)
+MATCHES=$(echo -n "${PEER_LINE}" | grep -c . || true)
 if [[ "${MATCHES}" -eq 0 ]]; then
     echo "[#] Клиент '${ARG}' не найден в wg0.conf. Выход" >&2
     exit 1
@@ -110,10 +110,14 @@ if command -v systemctl >/dev/null && systemctl is-active --quiet wg-quick@wg0; 
 fi
 
 # вывести QR на экран
-qrencode -t ansiutf8 < "./clients/${userName}/${userName}.conf"
+if command -v qrencode >/dev/null; then
+    qrencode -t ansiutf8 < "./clients/${userName}/${userName}.conf"
+fi
 
 echo "# Конфиг ${userName}.conf"
 cat "./clients/${userName}/${userName}.conf"
 
 # сохранить QR в PNG
-qrencode -t png -o "./clients/${userName}/${userName}.png" < "./clients/${userName}/${userName}.conf"
+if command -v qrencode >/dev/null; then
+    qrencode -t png -o "./clients/${userName}/${userName}.png" < "./clients/${userName}/${userName}.conf"
+fi
