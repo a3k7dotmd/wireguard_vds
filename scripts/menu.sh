@@ -15,11 +15,11 @@ while true; do
   5) Полностью снести WireGuard
   q) Выход
 EOF
-    read -r -p "Выбор: " choice
+    read -r -p "Выбор: " choice || exit 0
     case "${choice}" in
         1) "${WGCTL}" install ;;
-        2) read -r -p "Email: " email; "${WGCTL}" add "${email}" ;;
-        3) read -r -p "Email или username: " arg; "${WGCTL}" remove "${arg}" ;;
+        2) read -r -p "Email: " email || continue; "${WGCTL}" add "${email}" ;;
+        3) read -r -p "Email или username: " arg || continue; "${WGCTL}" remove "${arg}" ;;
         4) "${WGCTL}" reset ;;
         5) "${WGCTL}" uninstall ;;
         q|Q|"") exit 0 ;;
