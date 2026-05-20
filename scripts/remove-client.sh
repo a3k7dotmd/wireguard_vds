@@ -14,7 +14,7 @@ fi
 
 cd "${WORK_DIR}" || exit 1
 
-# Find the matching [Peer] line. Accept either a full email or a bare username.
+# найти [Peer]-блок по email или username (по префиксу до @)
 if [[ "${ARG}" == *@* ]]; then
     PEER_LINE=$(grep -F "[Peer] # ${ARG}" wg0.conf)
 else

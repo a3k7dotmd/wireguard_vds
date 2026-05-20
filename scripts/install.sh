@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# work direcrory
+# рабочая директория
 WORK_DIR=/etc/wireguard
 
 # установка wireguard
@@ -8,7 +8,7 @@ apt update && \
 apt install -y wireguard-dkms wireguard-tools qrencode
 
 
-# разрешить перенаправлени пакетов
+# разрешить перенаправление пакетов
 IP_FORWARD="net.ipv4.ip_forward=1"
 FORWARD_FILE=/etc/sysctl.d/99-ip_forward.conf
 echo "${IP_FORWARD}" > "${FORWARD_FILE}" && sysctl -p "${FORWARD_FILE}"
@@ -16,10 +16,10 @@ echo "${IP_FORWARD}" > "${FORWARD_FILE}" && sysctl -p "${FORWARD_FILE}"
 # перейти в рабочую директорию
 cd "${WORK_DIR}" || exit 1
 
-# change default umask
+# дефолтный umask
 umask 077
 
-# generate server keys
+# сгенерировать серверные ключи
 
 
 if [[ -e server.pub && -e server.key ]]
@@ -32,7 +32,7 @@ if [[ -e server.pub && -e server.key ]]
 fi
 
 
-#set endpoit — wan server ip's
+# определить endpoint — внешний IP сервера
 WAN_IP=$(curl -fsS -4 https://api.ipify.org)
 
 read -r -p "Enter the endpoint (external ip and port) in format [ipv4:port]. ([ENTER] set ${WAN_IP}:51820): " ENDPOINT
@@ -41,7 +41,7 @@ if [ -z "${ENDPOINT}" ]
   else echo "${ENDPOINT}" > ./endpoint.var
 fi
 
-# set vpn-server vpn address
+# адрес сервера в VPN-подсети
 if [ -z "${1}" ]
   then
     read -r -p "Enter the server address in the VPN subnet (CIDR format), [ENTER] set to default: 10.8.8.1: " SERVER_IP
@@ -51,7 +51,7 @@ if [ -z "${1}" ]
   else SERVER_IP="${1}"
 fi
 
-# set vpn-server subnet
+# подсеть VPN
 echo "${SERVER_IP}" | grep -o -E '([0-9]+\.){3}' > ./vpn_subnet.var
 
 read -r -p "Enter the ip address of the server DNS (CIDR format), [ENTER] set to default: 9.9.9.9): " DNS

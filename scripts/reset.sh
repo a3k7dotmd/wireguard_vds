@@ -4,13 +4,13 @@ echo "# Reseting..."
 
 cd /etc/wireguard || exit 1
 
-# Delete the folder with customer data
+# удалить директории клиентов
 rm -rf ./clients
 
-# Zero IP counter
+# обнулить счётчик IP
 echo "1" > last_used_ip.var
 
-# Resetting the server configuration template to default settings
+# восстановить серверный конфиг из шаблона
 cp -f wg0.conf.def wg0.conf
 
 systemctl stop wg-quick@wg0

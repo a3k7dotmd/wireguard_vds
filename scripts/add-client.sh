@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# work direcrory
+# рабочая директория
 WORK_DIR=/etc/wireguard
 
-# We read from the input parameter the name of the client
+# имя клиента из аргумента или интерактивного ввода
 if [ -z "${1}" ]
   then
     read -r -p "Enter VPN user email: " EMAIL
@@ -27,7 +27,7 @@ PRIV_KEY=".key"
 PUB_KEY=".pub"
 ALLOWED_IP="0.0.0.0/0"
 
-# Go to the wireguard directory and create a directory structure in which we will store client configuration files
+# создать директорию для конфига и ключей клиента
 if [ -d ./clients/"${userName}" ]
   then
     cd ./clients/"${userName}" || exit 1
@@ -47,7 +47,7 @@ echo "${CLIENT_PUBLIC_KEY}" > ./"${userName}${PUB_KEY}"
 
 read -r SERVER_PUBLIC_KEY < /etc/wireguard/server.pub
 
-# We get the following client IP address
+# выделить следующий свободный IP в пуле
 read -r OCTET_IP < /etc/wireguard/last_used_ip.var
 if
 	[[ ${OCTET_IP} -ge 254 ]]; then
@@ -60,7 +60,7 @@ echo "${OCTET_IP}" > /etc/wireguard/last_used_ip.var
 
 CLIENT_IP="${VPN_SUBNET}${OCTET_IP}/32"
 
-# Create a blank configuration file client 
+# создать клиентский конфиг
 cat > /etc/wireguard/clients/"${userName}"/"${userName}".conf << EOF
 [Interface]
 PrivateKey = ${CLIENT_PRIVKEY}
@@ -75,7 +75,7 @@ Endpoint = ${ENDPOINT}
 PersistentKeepalive=25
 EOF
 
-# Add new client data to the Wireguard configuration file
+# дописать [Peer] в wg0.conf
 cat >> /etc/wireguard/wg0.conf << _EOF_
 
 [Peer] # ${EMAIL}
@@ -84,19 +84,19 @@ PresharedKey = ${CLIENT_PRESHARED_KEY}
 AllowedIPs = ${CLIENT_IP}
 _EOF_
 
-# Apply updated wg0.conf without dropping active peers.
+# применить wg0.conf без обрыва активных туннелей
 if systemctl is-active --quiet wg-quick@wg0; then
     wg syncconf wg0 <(wg-quick strip wg0)
 else
     systemctl start wg-quick@wg0
 fi
 
-# Show QR config to display
+# вывести QR на экран
 qrencode -t ansiutf8 < ./"${userName}".conf
 
-# Show config file
+# вывести содержимое конфига
 echo "# Display ${userName}.conf"
 cat ./"${userName}".conf
 
-# Save QR config to png file
+# сохранить QR в PNG
 qrencode -t png -o ./"${userName}".png < ./"${userName}".conf
