@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "# Removing"
 
 wg-quick down wg0

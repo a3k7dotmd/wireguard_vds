@@ -14,7 +14,7 @@ FORWARD_FILE=/etc/sysctl.d/99-ip_forward.conf
 echo $IP_FORWARD > $FORWARD_FILE && sysctl -p $FORWARD_FILE
 
 # перейти в рабочую директорию
-cd ${WORK_DIR}
+cd ${WORK_DIR} || exit 1
 
 # change default umask
 umask 077
@@ -22,7 +22,7 @@ umask 077
 # generate server keys
 
 
-if [[ -e server.pub && server.key ]]
+if [[ -e server.pub && -e server.key ]]
   then echo "ключи есть"	
   else
     SERVER_PRIVKEY=$( wg genkey )

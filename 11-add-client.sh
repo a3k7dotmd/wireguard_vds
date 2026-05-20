@@ -17,7 +17,7 @@ fi
 userName=$(echo $EMAIL | awk -F "@" '{print $1}')
 echo "Username is $userName"
 
-cd $WORK_DIR
+cd $WORK_DIR || exit 1
 
 read DNS < ./dns.var
 read ENDPOINT < ./endpoint.var
@@ -29,8 +29,8 @@ ALLOWED_IP="0.0.0.0/0"
 
 # Go to the wireguard directory and create a directory structure in which we will store client configuration files
 if [ -d ./clients/${userName} ]
-  then 
-    cd ./clients/${userName}
+  then
+    cd ./clients/${userName} || exit 1
   else mkdir -p ./clients/${userName} && \
       cd ./clients/${userName} && \
       umask 077

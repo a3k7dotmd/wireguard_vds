@@ -1,6 +1,8 @@
+#!/bin/bash
+
 echo "# Reseting..."
 
-cd /etc/wireguard
+cd /etc/wireguard || exit 1
 
 # Delete the folder with customer data
 rm -rf ./clients
