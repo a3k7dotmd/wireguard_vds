@@ -60,7 +60,7 @@ make lint
 make test
 ```
 
-Smoke-тесты создают временный `wg0.conf` в `mktemp -d` и проверяют поведение `12-remove-client.sh` на нескольких сценариях — не требуют ни root, ни поднятого WireGuard, идут за миллисекунды.
+Smoke-тесты создают временный `wg0.conf` в `mktemp -d` и проверяют поведение `scripts/remove-client.sh` на нескольких сценариях — не требуют ни root, ни поднятого WireGuard, идут за миллисекунды.
 
 Подробнее — см. [CONTRIBUTING.md](CONTRIBUTING.md). Если нашли уязвимость — [SECURITY.md](SECURITY.md).
 
